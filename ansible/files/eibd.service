@@ -1,0 +1,17 @@
+[Unit]
+Description=EIB Daemon
+After=network.target
+
+[Service]
+EnvironmentFile=/etc/default/eibd
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/eibd
+ExecStartPre=/bin/chown eibd:eibd /var/log/eibd
+ExecStart=/usr/bin/eibd -p /run/eibd/eibd.pid $EIBD_OPTIONS
+Type=forking
+PIDFile=/run/eibd/eibd.pid
+User=eibd
+Group=eibd
+
+[Install]
+WantedBy=multi-user.target

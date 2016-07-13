@@ -1,0 +1,109 @@
+---
+- hosts: all
+  become: Yes
+  tasks:
+  - replace:
+      dest: /etc/apt/sources.list 
+      regexp: 'jessie' 
+      replace: 'testing' 
+      backup: yes
+  - apt:
+      upgrade: dist
+      update-cache: Yes
+  - apt:
+      name: "{{item}}"
+      state: installed
+      update-cache: Yes
+      cache_valid_time: 3600
+    with_items:
+      - python3
+      - python-dateutil
+      - apache2 
+      - php7.0
+      - php7.0-json
+      - unzip
+      - git
+      - build-essential
+      - debhelper
+      - cdbs
+      - autoconf 
+      - automake 
+      - libtool 
+      - libusb-1.0-0 
+      - libusb-1.0-0-dev 
+      - pkg-config 
+      - libsystemd-dev 
+      - dh-systemd 
+      - base-files
+  - file:
+      state: absent
+      dest: /tmp/knxd
+  - git:
+      repo: https://github.com/knxd/knxd.git
+      dest: /tmp/knxd
+  - get_url: 
+      url: https://www.auto.tuwien.ac.at/~mkoegler/pth/pthsem_2.0.8.tar.gz
+      dest: /tmp
+  - unarchive:
+      src: /tmp/pthsem_2.0.8.tar.gz
+      dest: /tmp
+      copy: no
+  - command: dpkg-buildpackage -b -uc
+    args:
+      chdir: /tmp/pthsem-2.0.8
+
+  - shell: ls /tmp/libpthsem*.deb
+    register: path_files
+  - apt:
+      deb: "{{ item }}"
+    with_items: path_files.stdout_lines
+
+  - command: dpkg-buildpackage -b -uc
+    args:
+      chdir: /tmp/knxd
+  - shell: ls /tmp/knxd_*.deb /tmp/knxd-tools_*.deb
+    register: path_files
+  - apt:
+      deb: "{{ item }}"
+    with_items: path_files.stdout_lines
+
+  - user: 
+      name: smarthome 
+      shell: /bin/bash 
+      groups: www-data
+      append: yes
+      system: yes
+  - get_url: 
+      url: http://smartvisu.de/download/smartVISU_2.7.zip
+      dest: /tmp
+  - command: unzip -o /tmp/smartVISU_2.7.zip -d /var/www/html/
+  - file: 
+      dest: /var/www/html/smartVISU/temp
+      owner: www-data
+      group: www-data
+      state: directory
+  - file:
+      dest: /var/www/html/smartVISU/config.php
+      owner: www-data
+      group: www-data
+      state: touch
+
+  - git:
+      repo: https://github.com/smarthomeNG/smarthome
+      dest: /opt/smarthome
+  - file:
+      dest: /opt/smarthome
+      user: smarthome
+      group: smarthome
+      state: directory
+      recursive: yes
+  - copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+    with_items:
+      - { src: 'files/smarthome.service', dest: '/etc/systemd/system/smarthome.service' }
+  - service:
+      name: smarthome
+      enabled: yes
+
+

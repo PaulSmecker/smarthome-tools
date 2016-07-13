@@ -1,0 +1,5 @@
+# Command line parameters for eibd
+# EIBD_OPTIONS="-d -D -T -R -S -i -u --eibaddr=1.1.128 usb:%DEVICEID%"
+# EIBD_OPTIONS="-d -D -T -R -S -i -u --eibaddr=1.1.128 tpuarts:/dev/ttyAMA0"
+EIBD_OPTIONS="-d/var/log/eibd/eibd.log -D -T -R -S -i -u --eibaddr=1.1.128 ipt:192.168.56.1"
+

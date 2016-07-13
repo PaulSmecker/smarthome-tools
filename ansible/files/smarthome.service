@@ -1,0 +1,13 @@
+[Unit]
+Description=smarthome.py
+After=network.target
+
+[Service]
+ExecStart=/opt/smarthome/bin/smarthome.py
+Type=forking
+User=smarthome
+Group=smarthome
+PIDFile=/opt/smarthome/var/run/smarthome.pid
+
+[Install]
+WantedBy=multi-user.target
