@@ -43,11 +43,11 @@ def print_item(key, item, level):
             if [key for key in item.keys() if 'level' in key.lower()]:
                 print "{}type = bool".format(prefix)
                 print "{}visu_acl = rw".format(prefix)
-                print "{}sv_widget = {{{{ device.dimmer('item', 'item.name', 'item', 'item.level') }}}}".format(prefix)
+                print "{}sv_widget = {{{{ device.dimmer('item', 'item', 'item', 'item.level') }}}}".format(prefix)
             else:
                 print "{}type = bool".format(prefix)
                 print "{}visu_acl = rw".format(prefix)
-                print "{}sv_widget = {{{{ basic.switch('item', 'item.name') }}}}".format(prefix)
+                print "{}sv_widget = {{{{ basic.switch('item', 'item') }}}}".format(prefix)
         for a, b in { a:b for (a,b) in item.items() if isinstance(b, basestring)}.items():
             print_item(a, b, level + 1)
         for a, b in { a:b for (a,b) in item.items() if isinstance(b, dict)}.items():
