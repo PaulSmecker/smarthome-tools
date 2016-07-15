@@ -91,6 +91,7 @@
   - git:
       repo: https://github.com/smarthomeNG/smarthome
       dest: /opt/smarthome
+      force: yes
   - file:
       dest: /opt/smarthome
       user: smarthome
